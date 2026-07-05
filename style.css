@@ -108,7 +108,7 @@ body {
 }
 
 @media (max-width: 800px) {
-  .sheet-grid { grid-template-columns: 1fr; }
+  body:not(.exporting) .sheet-grid { grid-template-columns: 1fr; }
 }
 
 .panel {
@@ -182,4 +182,60 @@ td.col-order input[type="checkbox"] { width: auto; }
 
 @media print {
   .no-export { display: none !important; }
+}
+
+/* Stacked "card" layout for tables on narrow (phone) screens.
+   Rules are scoped with body:not(.exporting) so the export button can
+   temporarily force the desktop table layout for a clean PNG, regardless
+   of the device's actual viewport width. */
+@media (max-width: 700px) {
+  body:not(.exporting) { padding: 8px; }
+  body:not(.exporting) .sheet { padding: 10px; }
+  body:not(.exporting) .toolbar-buttons { width: 100%; }
+  body:not(.exporting) .toolbar-buttons .btn { flex: 1; }
+
+  body:not(.exporting) .stock-table thead, body:not(.exporting) .mini-table thead { display: none; }
+
+  body:not(.exporting) .stock-table tbody, body:not(.exporting) .mini-table tbody { display: block; }
+
+  body:not(.exporting) .stock-table tr, body:not(.exporting) .mini-table tr {
+    display: block;
+    border: 1px solid #999;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    padding: 2px 0;
+  }
+
+  body:not(.exporting) .stock-table td, body:not(.exporting) .mini-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border: none;
+    border-bottom: 1px solid #eee;
+    padding: 7px 10px;
+  }
+  body:not(.exporting) .stock-table td:last-child, body:not(.exporting) .mini-table td:last-child { border-bottom: none; }
+
+  body:not(.exporting) .stock-table td::before, body:not(.exporting) .mini-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #555;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  body:not(.exporting) .stock-table td input, body:not(.exporting) .mini-table td input {
+    text-align: right;
+    flex: 1;
+  }
+  body:not(.exporting) .col-name input { text-align: left; }
+
+  /* Prevent iOS Safari from auto-zooming when a field is focused */
+  body:not(.exporting) .stock-table td input,
+  body:not(.exporting) .mini-table td input,
+  body:not(.exporting) .shopping-list input,
+  body:not(.exporting) .inline-input {
+    font-size: 16px !important;
+  }
 }

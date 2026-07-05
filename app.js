@@ -81,11 +81,11 @@ function renderStock() {
   data.stock.forEach((row, i) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="col-no">${i + 1}</td>
-      <td><input data-path="stock.${i}.brand" value="${esc(row.brand)}"></td>
-      <td><input data-path="stock.${i}.name" value="${esc(row.name)}"></td>
-      <td><input type="number" data-path="stock.${i}.pos" value="${esc(row.pos)}"></td>
-      <td><input type="number" data-path="stock.${i}.remain" value="${esc(row.remain)}"></td>
+      <td class="col-no" data-label="#">${i + 1}</td>
+      <td data-label="ผู้ผลิต"><input data-path="stock.${i}.brand" value="${esc(row.brand)}"></td>
+      <td data-label="ชื่อสินค้า (ตู้)"><input data-path="stock.${i}.name" value="${esc(row.name)}"></td>
+      <td data-label="จำนวนใน POS"><input type="number" data-path="stock.${i}.pos" value="${esc(row.pos)}"></td>
+      <td data-label="คงเหลือ"><input type="number" data-path="stock.${i}.remain" value="${esc(row.remain)}"></td>
       <td class="col-del no-export"><button class="btn-del" data-del="stock.${i}">✕</button></td>
     `;
     body.appendChild(tr);
@@ -98,9 +98,9 @@ function renderTaps() {
   data.taps.forEach((row, i) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="col-tap">Tap ${i + 1}</td>
-      <td><input data-path="taps.${i}.name" value="${esc(row.name)}"></td>
-      <td class="col-pct"><input data-path="taps.${i}.remain" value="${esc(row.remain)}" placeholder="%"></td>
+      <td class="col-tap" data-label="Tap">Tap ${i + 1}</td>
+      <td data-label="ชื่อสินค้า"><input data-path="taps.${i}.name" value="${esc(row.name)}"></td>
+      <td class="col-pct" data-label="จำนวนคงเหลือ (%)"><input data-path="taps.${i}.remain" value="${esc(row.remain)}" placeholder="%"></td>
       <td class="col-del no-export">${i >= 9 ? `<button class="btn-del" data-del="taps.${i}">✕</button>` : ""}</td>
     `;
     body.appendChild(tr);
@@ -113,8 +113,8 @@ function renderSpares() {
   data.spares.forEach((row, i) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td><input data-path="spares.${i}.name" value="${esc(row.name)}"></td>
-      <td class="col-pct"><input data-path="spares.${i}.remain" value="${esc(row.remain)}" placeholder="%"></td>
+      <td data-label="ชื่อสินค้า"><input data-path="spares.${i}.name" value="${esc(row.name)}"></td>
+      <td class="col-pct" data-label="จำนวนคงเหลือ (%)"><input data-path="spares.${i}.remain" value="${esc(row.remain)}" placeholder="%"></td>
       <td class="col-del no-export"><button class="btn-del" data-del="spares.${i}">✕</button></td>
     `;
     body.appendChild(tr);
@@ -127,9 +127,9 @@ function renderFried() {
   data.fried.forEach((row, i) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td><input data-path="fried.${i}.name" value="${esc(row.name)}"></td>
-      <td class="col-pct"><input data-path="fried.${i}.remain" value="${esc(row.remain)}"></td>
-      <td class="col-order"><input type="checkbox" data-path="fried.${i}.order" ${row.order ? "checked" : ""}></td>
+      <td data-label="ของทอด"><input data-path="fried.${i}.name" value="${esc(row.name)}"></td>
+      <td class="col-pct" data-label="คงเหลือ"><input data-path="fried.${i}.remain" value="${esc(row.remain)}"></td>
+      <td class="col-order" data-label="สั่งเพิ่มไหม?"><input type="checkbox" data-path="fried.${i}.order" ${row.order ? "checked" : ""}></td>
       <td class="col-del no-export"><button class="btn-del" data-del="fried.${i}">✕</button></td>
     `;
     body.appendChild(tr);
@@ -224,11 +224,23 @@ document.getElementById("btnResetCounts").addEventListener("click", () => {
 
 document.getElementById("btnExport").addEventListener("click", async () => {
   const target = document.getElementById("formRoot");
-  const canvas = await html2canvas(target, {
-    scale: 2,
-    backgroundColor: "#ffffff",
-    ignoreElements: (el) => el.classList && el.classList.contains("no-export"),
-  });
+  // Force the desktop table layout for the export, even on a phone-sized
+  // viewport, so the PNG always looks like the original paper form.
+  document.body.classList.add("exporting");
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+
+  let canvas;
+  try {
+    canvas = await html2canvas(target, {
+      scale: 2,
+      backgroundColor: "#ffffff",
+      windowWidth: 1100,
+      ignoreElements: (el) => el.classList && el.classList.contains("no-export"),
+    });
+  } finally {
+    document.body.classList.remove("exporting");
+  }
+
   const dateLabel = data.countDate || todayISO();
   canvas.toBlob((blob) => {
     const url = URL.createObjectURL(blob);
