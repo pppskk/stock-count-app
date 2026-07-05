@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>นับสต๊อคสินค้า</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="toolbar no-export">
+  <div id="reminderBanner" class="reminder hidden">📅 วันนี้ถึงรอบนับสต๊อคแล้ว!</div>
+  <div class="toolbar-buttons">
+    <button id="btnExport" class="btn btn-primary">📷 โหลดเป็นรูปภาพ</button>
+    <button id="btnResetCounts" class="btn btn-secondary">🔄 เริ่มรอบนับใหม่ (ล้างจำนวน)</button>
+  </div>
+</div>
+
+<div id="formRoot" class="sheet">
+
+  <div class="sheet-header">
+    <div class="shop-name-wrap">
+      <span>Stock ของร้าน</span>
+      <input id="shopName" class="inline-input shop-name-input" value="No.9 Hostel &amp; Cafe">
+    </div>
+    <div class="date-wrap">
+      <span>(Date:</span>
+      <input id="countDate" type="date" class="inline-input">
+      <span>)</span>
+    </div>
+  </div>
+
+  <div class="sheet-grid">
+
+    <!-- LEFT: main stock table -->
+    <div class="panel panel-stock">
+      <table class="stock-table">
+        <thead>
+          <tr>
+            <th class="col-no">#</th>
+            <th class="col-brand">ผู้ผลิต</th>
+            <th class="col-name">ชื่อสินค้า (ตู้)</th>
+            <th class="col-num">จำนวนใน POS</th>
+            <th class="col-num">คงเหลือ</th>
+            <th class="col-del no-export"></th>
+          </tr>
+        </thead>
+        <tbody id="stockBody"></tbody>
+      </table>
+      <button class="btn btn-add no-export" data-add="stock">+ เพิ่มสินค้า</button>
+    </div>
+
+    <!-- RIGHT: stacked panels -->
+    <div class="panel-col">
+
+      <div class="panel">
+        <h3>ชื่อสินค้า (Tap)</h3>
+        <table class="mini-table">
+          <thead><tr><th class="col-tap">Tap</th><th>ชื่อสินค้า</th><th class="col-pct">จำนวนคงเหลือ (%)</th><th class="col-del no-export"></th></tr></thead>
+          <tbody id="tapBody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h3>Spare</h3>
+        <table class="mini-table">
+          <thead><tr><th>ชื่อสินค้า</th><th class="col-pct">จำนวนคงเหลือ (%)</th><th class="col-del no-export"></th></tr></thead>
+          <tbody id="spareBody"></tbody>
+        </table>
+        <button class="btn btn-add no-export" data-add="spare">+ เพิ่ม Spare</button>
+      </div>
+
+      <div class="panel">
+        <h3>ของทอด</h3>
+        <table class="mini-table">
+          <thead><tr><th>ของทอด</th><th class="col-pct">คงเหลือ</th><th class="col-order">สั่งเพิ่มไหม?</th><th class="col-del no-export"></th></tr></thead>
+          <tbody id="friedBody"></tbody>
+        </table>
+        <button class="btn btn-add no-export" data-add="fried">+ เพิ่มรายการ</button>
+      </div>
+
+      <div class="panel">
+        <h3>Shopping List</h3>
+        <ul id="shoppingList" class="shopping-list"></ul>
+        <button class="btn btn-add no-export" data-add="shopping">+ เพิ่มรายการ</button>
+      </div>
+
+      <div class="panel signoff">
+        <div class="signoff-row">
+          <span>CHECKED BY:</span>
+          <input id="checkedBy" class="inline-input" placeholder="ชื่อผู้ตรวจนับ">
+        </div>
+        <div class="signoff-row">
+          <span>DATE:</span>
+          <input id="signDate" type="date" class="inline-input">
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
